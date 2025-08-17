@@ -2,7 +2,6 @@ from django.shortcuts import render, get_object_or_404
 from .models import Livro, Autor, Categoria
 
 def listar_livros(request):
-
     categoria = request.GET.get('categoria')
     titulo = request.GET.get('titulo')
     autor = request.GET.get('autor')

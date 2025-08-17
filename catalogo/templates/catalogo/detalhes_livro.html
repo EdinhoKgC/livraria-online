@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ livro.titulo }} - Livraria Online{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        
+        <div class="col-md-4">
+            {% if livro.capa %}
+                <img src="{{ livro.capa }}" alt="Capa do {{ livro.titulo }}" class="img-fluid rounded shadow">
+            {% else %}
+                <div class="bg-light rounded d-flex align-items-center justify-content-center" style="height: 400px;">
+                    <span class="text-muted">Sem imagem</span>
+                </div>
+            {% endif %}
+        </div>
+        
+        <div class="col-md-8">
+            <h1 class="mb-3">{{ livro.titulo }}</h1>
+            
+            <div class="mb-4">
+                <p><strong>Autor:</strong> {{ livro.autor.nome }}</p>
+                <p><strong>Categoria:</strong> {{ livro.categoria.nome }}</p>
+                {% if livro.publicadora %}
+                    <p><strong>Editora:</strong> {{ livro.publicadora }}</p>
+                {% endif %}
+                <p><strong>Data de Publicação:</strong> {{ livro.data_publicacao|date:"d/m/Y" }}</p>
+                {% if livro.numero_paginas %}
+                    <p><strong>Número de Páginas:</strong> {{ livro.numero_paginas }}</p>
+                {% endif %}
+            </div>
+            
+            {% if livro.sinopse %}
+                <div class="mb-4">
+                    <h4>Sinopse</h4>
+                    <p>{{ livro.sinopse }}</p>
+                </div>
+            {% endif %}
+            
+            <div class="d-grid gap-2 d-md-block">
+                <a href="{% url 'carrinho:adicionar_ao_carrinho' livro.id %}" class="btn btn-primary btn-lg">
+                    <i class="bi bi-cart-plus"></i> Adicionar ao Carrinho
+                </a>
+                <a href="{% url 'catalogo:listar_livros' %}" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left"></i> Voltar ao Catálogo
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

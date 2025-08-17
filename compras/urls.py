@@ -3,7 +3,7 @@ from . import views
 
 app_name = 'compras'
 
-urlpatters = [
+urlpatterns = [
     path('finalizar/', views.finalizar_compra, name='finalizar_compra'),
     path('historico/', views.historico_compras, name='historico_compras')
 ]

@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block title %}Catálogo de Livros{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>Catálogo de Livros</h1>
+    
+    <form method="get" class="mb-4">
+        <div class="row">
+            <div class="col-md-3">
+                <input type="text" name="titulo" class="form-control" placeholder="Nome do Livro" value="{{ request.GET.titulo }}">
+            </div>
+            <div class="col-md-3">
+                <input type="text" name="autor" class="form-control" placeholder="Autor" value="{{ request.GET.autor }}">
+            </div>
+            <div class="col-md-3">
+                <input type="text" name="categoria" class="form-control" placeholder="Categoria" value="{{ request.GET.categoria }}">
+            </div>
+            <div class="col-md-3">
+                <button type="submit" class="btn btn-primary">Filtrar</button>
+            </div>
+        </div>
+    </form>
+
+    <div class="row">
+        {% for livro in livros %}
+            <div class="col-md-4 mb-4">
+                <div class="card">
+                    {% if livro.capa %}
+                        <img src="{{ livro.capa }}" class="card-img-top" alt="Capa do livro" style="height: 200px; object-fit: cover;">
+                    {% endif %}
+                    <div class="card-body">
+                        <h5 class="card-title">{{ livro.titulo }}</h5>
+                        <p class="card-text">
+                            <strong>Autor:</strong> {{ livro.autor.nome }}<br>
+                            <strong>Categoria:</strong> {{ livro.categoria.nome }}<br>
+                            <strong>Publicação:</strong> {{ livro.data_publicacao|date:"d/m/Y" }}
+                        </p>
+                        <a href="{% url 'catalogo:detalhes_livro' livro.id %}" class="btn btn-primary">Ver Detalhes</a>
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <div class="col-12">
+                <div class="alert alert-info">
+                    Nenhum livro encontrado.
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
