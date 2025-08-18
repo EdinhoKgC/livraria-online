@@ -1,0 +1,243 @@
+{% extends 'base.html' %}
+
+{% block title %}Cadastro - Livraria Online{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header text-center">
+                    <h3 class="mb-0">
+                        <i class="bi bi-person-plus"></i> Criar Conta
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <!-- Informações pessoais -->
+                        <h5 class="mb-3">Informações Pessoais</h5>
+                        
+                        <!-- Email -->
+                        <div class="mb-3">
+                            <label for="{{ form.email.id_for_label }}" class="form-label">
+                                <strong>E-mail *</strong>
+                            </label>
+                            {{ form.email }}
+                            {% if form.email.errors %}
+                                <div class="text-danger">
+                                    {% for error in form.email.errors %}
+                                        <small>{{ error }}</small>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Nome e Sobrenome -->
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label for="{{ form.first_name.id_for_label }}" class="form-label">
+                                    <strong>Nome *</strong>
+                                </label>
+                                {{ form.first_name }}
+                                {% if form.first_name.errors %}
+                                    <div class="text-danger">
+                                        {% for error in form.first_name.errors %}
+                                            <small>{{ error }}</small>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6">
+                                <label for="{{ form.last_name.id_for_label }}" class="form-label">
+                                    <strong>Sobrenome *</strong>
+                                </label>
+                                {{ form.last_name }}
+                                {% if form.last_name.errors %}
+                                    <div class="text-danger">
+                                        {% for error in form.last_name.errors %}
+                                            <small>{{ error }}</small>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <!-- Senhas -->
+                        <h5 class="mb-3 mt-4">Senha</h5>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label for="{{ form.senha1.id_for_label }}" class="form-label">
+                                    <strong>Senha *</strong>
+                                </label>
+                                {{ form.senha1 }}
+                                {% if form.senha1.errors %}
+                                    <div class="text-danger">
+                                        {% for error in form.senha1.errors %}
+                                            <small>{{ error }}</small>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6">
+                                <label for="{{ form.senha2.id_for_label }}" class="form-label">
+                                    <strong>Confirmar Senha *</strong>
+                                </label>
+                                {{ form.senha2 }}
+                                {% if form.senha2.errors %}
+                                    <div class="text-danger">
+                                        {% for error in form.senha2.errors %}
+                                            <small>{{ error }}</small>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <!-- Endereço -->
+                        <h5 class="mb-3 mt-4">Endereço Principal</h5>
+                        
+                        <!-- Nome do endereço -->
+                        <div class="mb-3">
+                            <label for="{{ form.nome_endereco.id_for_label }}" class="form-label">
+                                <strong>Nome do Endereço *</strong>
+                            </label>
+                            {{ form.nome_endereco }}
+                            <div class="form-text">Ex: Casa, Trabalho, etc.</div>
+                            {% if form.nome_endereco.errors %}
+                                <div class="text-danger">
+                                    {% for error in form.nome_endereco.errors %}
+                                        <small>{{ error }}</small>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- CEP e Rua -->
+                        <div class="row">
+                            <div class="col-md-4">
+                                <label for="{{ form.cep.id_for_label }}" class="form-label">
+                                    <strong>CEP *</strong>
+                                </label>
+                                {{ form.cep }}
+                                {% if form.cep.errors %}
+                                    <div class="text-danger">
+                                        {% for error in form.cep.errors %}
+                                            <small>{{ error }}</small>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-8">
+                                <label for="{{ form.rua.id_for_label }}" class="form-label">
+                                    <strong>Rua *</strong>
+                                </label>
+                                {{ form.rua }}
+                                {% if form.rua.errors %}
+                                    <div class="text-danger">
+                                        {% for error in form.rua.errors %}
+                                            <small>{{ error }}</small>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <!-- Número e Complemento -->
+                        <div class="row">
+                            <div class="col-md-3">
+                                <label for="{{ form.numero.id_for_label }}" class="form-label">
+                                    <strong>Número *</strong>
+                                </label>
+                                {{ form.numero }}
+                                {% if form.numero.errors %}
+                                    <div class="text-danger">
+                                        {% for error in form.numero.errors %}
+                                            <small>{{ error }}</small>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-9">
+                                <label for="{{ form.complemento.id_for_label }}" class="form-label">
+                                    Complemento
+                                </label>
+                                {{ form.complemento }}
+                                {% if form.complemento.errors %}
+                                    <div class="text-danger">
+                                        {% for error in form.complemento.errors %}
+                                            <small>{{ error }}</small>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <!-- Bairro, Cidade e Estado -->
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label for="{{ form.bairro.id_for_label }}" class="form-label">
+                                    <strong>Bairro *</strong>
+                                </label>
+                                {{ form.bairro }}
+                                {% if form.bairro.errors %}
+                                    <div class="text-danger">
+                                        {% for error in form.bairro.errors %}
+                                            <small>{{ error }}</small>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-4">
+                                <label for="{{ form.cidade.id_for_label }}" class="form-label">
+                                    <strong>Cidade *</strong>
+                                </label>
+                                {{ form.cidade }}
+                                {% if form.cidade.errors %}
+                                    <div class="text-danger">
+                                        {% for error in form.cidade.errors %}
+                                            <small>{{ error }}</small>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-2">
+                                <label for="{{ form.estado.id_for_label }}" class="form-label">
+                                    <strong>Estado *</strong>
+                                </label>
+                                {{ form.estado }}
+                                {% if form.estado.errors %}
+                                    <div class="text-danger">
+                                        {% for error in form.estado.errors %}
+                                            <small>{{ error }}</small>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <!-- Botão de cadastro -->
+                        <div class="d-grid mt-4">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="bi bi-person-plus"></i> Criar Conta
+                            </button>
+                        </div>
+                    </form>
+                    
+                    <!-- Link para login -->
+                    <div class="text-center mt-3">
+                        <p class="mb-0">
+                            Já tem uma conta? 
+                            <a href="{% url 'usuarios:login_view' %}" class="text-decoration-none">
+                                Faça login aqui
+                            </a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

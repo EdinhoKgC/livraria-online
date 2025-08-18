@@ -16,7 +16,7 @@ def cadastro(request):
             messages.error(request, 'Erro no formulário. Verifique os dados.')
     else:
         form = CadastroForm()
-    return render(request, 'usuario/cadastro.html', {'form': form})
+    return render(request, 'usuarios/cadastro.html', {'form': form})
 
 def login_view(request):
     if request.method == "POST":
@@ -27,12 +27,14 @@ def login_view(request):
             if user:
                 login(request, user)
                 messages.success(request, f'Bem-vindo, {user.get_full_name()}!')
-                return redirect('catalogo:listar_livros')
+                
+                next_url = request.GET.get('next', 'catalogo:listar_livros')
+                return redirect(next_url)
             else:
                 messages.error(request, 'Email ou senha incorretos.')
     else:
         form = LoginForm()
-    return render(request, 'usuario/login.html', {'form': form})
+    return render(request, 'usuarios/login.html', {'form': form})
 
 def logout_view(request):
     logout(request)

@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+
+{% block title %}Seu Carrinho - Livraria Online{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="mb-4">Seu Carrinho</h1>
+    
+    {% if itens %}
+        <!-- Lista de itens do carrinho -->
+        <div class="row">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Itens no Carrinho</h5>
+                    </div>
+                    <div class="card-body">
+                        {% for item in itens %}
+                            <div class="row mb-3 align-items-center">
+                                <div class="col-md-2">
+                                    {% if item.livro.capa %}
+                                        <img src="{{ item.livro.capa }}" alt="Capa do {{ item.livro.titulo }}" 
+                                             class="img-fluid rounded" style="height: 80px; object-fit: cover;">
+                                    {% else %}
+                                        <div class="bg-light rounded d-flex align-items-center justify-content-center" 
+                                             style="height: 80px; width: 60px;">
+                                            <small class="text-muted">Sem imagem</small>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-4">
+                                    <h6 class="mb-1">{{ item.livro.titulo }}</h6>
+                                    <small class="text-muted">Autor: {{ item.livro.autor.nome }}</small>
+                                </div>
+                                <div class="col-md-3">
+                                    <!-- Controles de quantidade -->
+                                    <div class="input-group input-group-sm">
+                                        <a href="{% url 'carrinho:diminuir_quantidade' item.id %}" 
+                                           class="btn btn-outline-secondary">
+                                            <i class="bi bi-dash">-</i>
+                                        </a>
+                                        <span class="form-control text-center">{{ item.quantidade }}</span>
+                                        <a href="{% url 'carrinho:aumentar_quantidade' item.id %}" 
+                                           class="btn btn-outline-secondary">
+                                            <i class="bi bi-plus">+</i>
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <a href="{% url 'carrinho:remover_item' item.id %}" 
+                                       class="btn btn-sm btn-outline-danger"
+                                       onclick="return confirm('Tem certeza que deseja remover este item?')">
+                                        <i class="bi bi-trash"></i> Remover
+                                    </a>
+                                </div>
+                            </div>
+                            {% if not forloop.last %}
+                                <hr>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Resumo e ações -->
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Resumo</h5>
+                    </div>
+                    <div class="card-body">
+                        <p><strong>Total de itens:</strong> {{ total_itens }}</p>
+                        <p><strong>Quantidade total:</strong> {{ total_quantidade }}</p>
+                        
+                        <div class="d-grid gap-2">
+                            <a href="{% url 'compras:finalizar_compra' %}" class="btn btn-success btn-lg">
+                                <i class="bi bi-check-circle"></i> Finalizar Compra
+                            </a>
+                            <a href="{% url 'catalogo:listar_livros' %}" class="btn btn-outline-primary">
+                                <i class="bi bi-arrow-left"></i> Continuar Comprando
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <!-- Carrinho vazio -->
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <i class="bi bi-cart-x" style="font-size: 3rem; color: #6c757d;"></i>
+                        <h5 class="card-title mt-3">Seu carrinho está vazio</h5>
+                        <p class="card-text">Adicione alguns livros ao seu carrinho para começar.</p>
+                        <a href="{% url 'catalogo:listar_livros' %}" class="btn btn-primary">
+                            <i class="bi bi-book"></i> Ver Catálogo
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

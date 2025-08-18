@@ -31,10 +31,33 @@ class CustomUser(AbstractUser):
 
     objects = CustomUserManager()
 
+    def get_full_name(self):
+        return f"{self.first_name} {self.last_name}".strip() or self.email
+
+class Endereco(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='enderecos')
+    nome_endereco = models.CharField(max_length=100, help_text="Ex: Casa, Trabalho, etc.")
+    cep = models.CharField(max_length=9)
+    rua = models.CharField(max_length=200)
+    numero = models.CharField(max_length=10)
+    complemento = models.CharField(max_length=100, blank=True)
+    bairro = models.CharField(max_length=100)
+    cidade = models.CharField(max_length=100)
+    estado = models.CharField(max_length=2)
+    
+    def __str__(self):
+        return f"{self.nome_endereco} - {self.rua}, {self.numero}, {self.bairro}, {self.cidade}-{self.estado}"
+    
+    def endereco_completo(self):
+        endereco = f"{self.rua}, {self.numero}"
+        if self.complemento:
+            endereco += f", {self.complemento}"
+        endereco += f", {self.bairro}, {self.cidade}-{self.estado}, CEP: {self.cep}"
+        return endereco
+
 class Perfil(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
     nome = models.CharField(max_length=255)
-    endereco = models.CharField(max_length=255)
 
     def __str__(self):
         return self.nome

@@ -5,7 +5,7 @@ from catalogo.models import Livro
 User = get_user_model()
 
 class Carrinho(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
     session_key = models.CharField(max_length=40, null=True, blank=True)
     criado_em = models.DateTimeField(auto_now_add=True)
 
