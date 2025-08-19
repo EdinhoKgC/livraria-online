@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Histórico de Compras - {{ user.get_full_name }}</title>
+    <style>
+        /* Reset e configurações básicas */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            font-size: 12px;
+            line-height: 1.4;
+            color: #333;
+            background: white;
+            margin: 20px;
+        }
+        
+        /* Cabeçalho */
+        .header {
+            text-align: center;
+            border-bottom: 3px solid #2c3e50;
+            padding-bottom: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            color: #2c3e50;
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+        
+        .header .subtitle {
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+        
+        .header .info {
+            margin-top: 10px;
+            font-size: 11px;
+            color: #555;
+        }
+        
+        /* Informações do cliente */
+        .client-info {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            padding: 15px;
+            margin-bottom: 25px;
+            border-radius: 5px;
+        }
+        
+        .client-info h3 {
+            color: #2c3e50;
+            font-size: 14px;
+            margin-bottom: 10px;
+            border-bottom: 1px solid #dee2e6;
+            padding-bottom: 5px;
+        }
+        
+        .client-info p {
+            margin: 3px 0;
+            font-size: 11px;
+        }
+        
+        /* Tabela de compras */
+        .compras-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        
+        .compras-table th {
+            background: #2c3e50;
+            color: white;
+            padding: 10px;
+            text-align: left;
+            font-size: 11px;
+            font-weight: bold;
+        }
+        
+        .compras-table td {
+            padding: 8px 10px;
+            border-bottom: 1px solid #dee2e6;
+            font-size: 10px;
+            vertical-align: top;
+        }
+        
+        .compras-table tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+        
+        .compras-table tr:hover {
+            background: #e9ecef;
+        }
+        
+        /* Detalhes dos itens */
+        .items-list {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .items-list li {
+            padding: 2px 0;
+            border-bottom: 1px solid #eee;
+            font-size: 9px;
+        }
+        
+        .items-list li:last-child {
+            border-bottom: none;
+        }
+        
+        /* Status e badges */
+        .status-completed {
+            background: #28a745;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 9px;
+            font-weight: bold;
+        }
+        
+        /* Resumo */
+        .summary {
+            background: #e3f2fd;
+            border: 1px solid #2196f3;
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 5px;
+        }
+        
+        .summary h3 {
+            color: #1976d2;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+        
+        .summary p {
+            margin: 5px 0;
+            font-size: 11px;
+        }
+        
+        /* Rodapé */
+        .footer {
+            margin-top: 30px;
+            padding-top: 15px;
+            border-top: 1px solid #dee2e6;
+            text-align: center;
+            font-size: 10px;
+            color: #7f8c8d;
+        }
+        
+        /* Quebras de página */
+        .page-break {
+            page-break-before: always;
+        }
+        
+        /* Impressão */
+        @media print {
+            body {
+                margin: 0;
+                padding: 15px;
+            }
+            
+            .compras-table {
+                page-break-inside: avoid;
+            }
+            
+            .client-info, .summary {
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Cabeçalho -->
+    <div class="header">
+        <h1> Livraria Online</h1>
+        <div class="subtitle">Histórico de Compras</div>
+        <div class="info">
+            Gerado em: {% now "d/m/Y H:i" %} | 
+            Cliente: {{ user.get_full_name|default:user.email }}
+        </div>
+    </div>
+    
+    <!-- Informações do cliente -->
+    <div class="client-info">
+        <h3>👤 Informações do Cliente</h3>
+        <p><strong>Nome:</strong> {{ user.get_full_name|default:"Não informado" }}</p>
+        <p><strong>E-mail:</strong> {{ user.email }}</p>
+        <p><strong>Data de cadastro:</strong> {{ user.date_joined|date:"d/m/Y" }}</p>
+        {% if user.perfil %}
+            <p><strong>Perfil:</strong> {{ user.perfil.nome }}</p>
+        {% endif %}
+    </div>
+    
+    <!-- Tabela de compras -->
+    {% if compras %}
+        <table class="compras-table">
+            <thead>
+                <tr>
+                    <th width="15%">Pedido</th>
+                    <th width="20%">Data</th>
+                    <th width="35%">Endereço de Entrega</th>
+                    <th width="20%">Itens</th>
+                    <th width="10%">Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for compra in compras %}
+                <tr>
+                    <td>
+                        <strong>#{{ compra.id }}</strong>
+                    </td>
+                    <td>
+                        {{ compra.data_compra|date:"d/m/Y" }}<br>
+                        <small>{{ compra.data_compra|date:"H:i" }}</small>
+                    </td>
+                    <td>
+                        <div style="font-size: 9px; line-height: 1.3;">
+                            {{ compra.endereco|linebreaksbr }}
+                        </div>
+                    </td>
+                    <td>
+                        <ul class="items-list">
+                            {% for item in compra.itens.all %}
+                            <li>
+                                📖 {{ item.livro.titulo }}<br>
+                                <small>Qtd: {{ item.quantidade }} | Autor: {{ item.livro.autor.nome }}</small>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </td>
+                    <td>
+                        <span class="status-completed">✓ Concluído</span>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        
+        <!-- Resumo -->
+        <div class="summary">
+            <h3>📊 Resumo</h3>
+            <p><strong>Total de pedidos:</strong> {{ compras.count }}</p>
+            <p><strong>Período:</strong> 
+                {{ compras.last.data_compra|date:"d/m/Y" }} até {{ compras.first.data_compra|date:"d/m/Y" }}
+            </p>
+            <p><strong>Total de itens comprados:</strong> 
+                {% with total_items=0 %}
+                    {% for compra in compras %}
+                        {% for item in compra.itens.all %}
+                            {% with total_items=total_items|add:item.quantidade %}{% endwith %}
+                        {% endfor %}
+                    {% endfor %}
+                    {{ total_items }}
+                {% endwith %}
+            </p>
+        </div>
+    {% else %}
+        <div style="text-align: center; padding: 40px; color: #7f8c8d;">
+            <h3>📭 Nenhuma compra encontrada</h3>
+            <p>Você ainda não realizou compras em nossa livraria.</p>
+        </div>
+    {% endif %}
+    
+    <!-- Rodapé -->
+    <div class="footer">
+        <p>📞 Suporte: suporte@livrariaonline.com |  www.livrariaonline.com</p>
+        <p>Este documento foi gerado automaticamente pelo sistema da Livraria Online.</p>
+        <p>© {% now "Y" %} Livraria Online. Todos os direitos reservados.</p>
+    </div>
+</body>
+</html>

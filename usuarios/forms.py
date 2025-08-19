@@ -9,7 +9,6 @@ class CadastroForm(forms.ModelForm):
     first_name = forms.CharField(max_length=30, label='Nome', required=True)
     last_name = forms.CharField(max_length=30, label='Sobrenome', required=True)
     
-   
     nome_endereco = forms.CharField(max_length=100, label='Nome do Endereço', 
                                    help_text="Ex: Casa, Trabalho, etc.")
     cep = forms.CharField(max_length=9, label='CEP')
@@ -26,6 +25,14 @@ class CadastroForm(forms.ModelForm):
     class Meta:
         model = User
         fields = ['email']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for name, field in self.fields.items():
+            is_select = isinstance(field.widget, (forms.Select, forms.SelectMultiple))
+            cls = 'form-select' if is_select else 'form-control'
+            base = field.widget.attrs.get('class', '')
+            field.widget.attrs['class'] = f"{base} {cls}".strip()
 
     def clean_email(self):
         email = self.cleaned_data['email'].strip().lower()
@@ -75,6 +82,14 @@ class LoginForm(forms.Form):
     email = forms.EmailField(label='E-mail')
     password = forms.CharField(widget=forms.PasswordInput, label='Senha')
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field in self.fields.values():
+            is_select = isinstance(field.widget, (forms.Select, forms.SelectMultiple))
+            cls = 'form-select' if is_select else 'form-control'
+            base = field.widget.attrs.get('class', '')
+            field.widget.attrs['class'] = f"{base} {cls}".strip()
+
 class EnderecoForm(forms.ModelForm):
     class Meta:
         model = Endereco
@@ -89,3 +104,11 @@ class EnderecoForm(forms.ModelForm):
             'cidade': 'Cidade',
             'estado': 'Estado'
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for name, field in self.fields.items():
+            is_select = isinstance(field.widget, (forms.Select, forms.SelectMultiple))
+            cls = 'form-select' if is_select else 'form-control'
+            base = field.widget.attrs.get('class', '')
+            field.widget.attrs['class'] = f"{base} {cls}".strip()

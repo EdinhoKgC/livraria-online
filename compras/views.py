@@ -2,6 +2,9 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Compra, ItemCompra
 from carrinho.models import Carrinho
+from django.http import HttpResponse
+from django.template.loader import render_to_string
+import weasyprint
 from usuarios.models import Endereco
 from usuarios.forms import EnderecoForm
 
@@ -16,7 +19,8 @@ def finalizar_compra(request):
         endereco_id = request.POST.get('endereco_id')
         novo_endereco = request.POST.get('novo_endereco') == 'true'
         
-        if novo_endereco:
+        if novo_endereco or not endereco_id:
+            
             form = EnderecoForm(request.POST)
             if form.is_valid():
                 endereco = form.save(commit=False)
@@ -24,16 +28,36 @@ def finalizar_compra(request):
                 endereco.save()
                 endereco_completo = endereco.endereco_completo()
             else:
+        
+                enderecos = request.user.enderecos.all()
                 return render(request, 'compras/finalizar_compra.html', {
                     'carrinho': carrinho,
-                    'enderecos': request.user.enderecos.all(),
+                    'enderecos': enderecos,
                     'form': form,
                     'novo_endereco': True
                 })
         else:
-            endereco_obj = get_object_or_404(Endereco, id=endereco_id, user=request.user)
-            endereco_completo = endereco_obj.endereco_completo()
+            try:
+                endereco_obj = get_object_or_404(Endereco, id=endereco_id, user=request.user)
+                endereco_completo = endereco_obj.endereco_completo()
+            except:
+                
+                form = EnderecoForm(request.POST)
+                if form.is_valid():
+                    endereco = form.save(commit=False)
+                    endereco.user = request.user
+                    endereco.save()
+                    endereco_completo = endereco.endereco_completo()
+                else:
+                    enderecos = request.user.enderecos.all()
+                    return render(request, 'compras/finalizar_compra.html', {
+                        'carrinho': carrinho,
+                        'enderecos': enderecos,
+                        'form': form,
+                        'novo_endereco': True
+                    })
         
+
         compra = Compra.objects.create(user=request.user, endereco=endereco_completo)
 
         for item in carrinho.itens.all():
@@ -43,6 +67,7 @@ def finalizar_compra(request):
 
         return redirect('compras:pedido_confirmado', compra_id=compra.id)
 
+
     enderecos = request.user.enderecos.all()
     form = EnderecoForm()
     
@@ -50,7 +75,7 @@ def finalizar_compra(request):
         'carrinho': carrinho,
         'enderecos': enderecos,
         'form': form,
-        'novo_endereco': False
+        'novo_endereco': len(enderecos) == 0  
     })
 
 @login_required
@@ -62,4 +87,18 @@ def pedido_confirmado(request, compra_id):
 def historico_compras(request):
     compras = Compra.objects.filter(user=request.user).order_by('-data_compra')
     return render(request, 'compras/historico_compras.html', {'compras': compras})
+
+@login_required
+def exportar_lista_compras(request):
+    
+    compras = Compra.objects.filter(user=request.user)
+    
+    html_string = render_to_string('compras/historico_compras_pdf.html', {'compras': compras, 'user': request.user})
+    
+    arquivo_pdf = weasyprint.HTML(string=html_string).write_pdf()
+    
+    response = HttpResponse(arquivo_pdf, content_type='application/pdf')
+    response['Content-Disposition'] = 'attachment;filename="historico_compras.pdf'
+    
+    return response
 # Create your views here.

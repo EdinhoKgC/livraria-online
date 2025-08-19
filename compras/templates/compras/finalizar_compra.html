@@ -92,7 +92,6 @@
                             </div>
                         {% endif %}
                         
-
                         <div id="form_novo_endereco" {% if not novo_endereco and enderecos %}style="display: none;"{% endif %}>
                             <div class="mb-3">
                                 <label for="{{ form.nome_endereco.id_for_label }}" class="form-label">
@@ -132,19 +131,19 @@
                             </div>
                             
                             <div class="row">
-                                <div class="col-md-6">
+                                <div class="col-md-4">
                                     <label for="{{ form.bairro.id_for_label }}" class="form-label">
                                         <strong>Bairro *</strong>
                                     </label>
                                     {{ form.bairro }}
                                 </div>
-                                <div class="col-md-4">
+                                <div class="col-md-3">
                                     <label for="{{ form.cidade.id_for_label }}" class="form-label">
                                         <strong>Cidade *</strong>
                                     </label>
                                     {{ form.cidade }}
                                 </div>
-                                <div class="col-md-2">
+                                <div class="col-md-3">
                                     <label for="{{ form.estado.id_for_label }}" class="form-label">
                                         <strong>Estado *</strong>
                                     </label>
@@ -175,18 +174,20 @@ document.addEventListener('DOMContentLoaded', function() {
     const enderecosExistentes = document.getElementById('enderecos_existentes');
     const formNovoEndereco = document.getElementById('form_novo_endereco');
     
-    function toggleEndereco() {
-        if (enderecoExistente.checked) {
-            enderecosExistentes.style.display = 'block';
-            formNovoEndereco.style.display = 'none';
-        } else {
-            enderecosExistentes.style.display = 'none';
-            formNovoEndereco.style.display = 'block';
+    if (enderecoExistente && novoEndereco) {
+        function toggleEndereco() {
+            if (enderecoExistente.checked) {
+                enderecosExistentes.style.display = 'block';
+                formNovoEndereco.style.display = 'none';
+            } else {
+                enderecosExistentes.style.display = 'none';
+                formNovoEndereco.style.display = 'block';
+            }
         }
+        
+        enderecoExistente.addEventListener('change', toggleEndereco);
+        novoEndereco.addEventListener('change', toggleEndereco);
     }
-    
-    enderecoExistente.addEventListener('change', toggleEndereco);
-    novoEndereco.addEventListener('change', toggleEndereco);
 });
 </script>
 {% endblock %}

@@ -5,6 +5,13 @@
 {% block content %}
 <div class="container">
     <h1 class="mb-4">Histórico de Compras</h1>
+
+    <div class="d-flex justify-content-start">
+        <a class="btn btn-success btn-lg" href="{% url 'compras:exportar_lista_compras' %}">
+            <h4 class="mb-0">Exportar lista de compras</h4>
+        </a>
+    </div>
+    
     
     {% if compras %}
         <div class="row">
