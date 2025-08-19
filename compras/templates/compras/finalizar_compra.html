@@ -169,25 +169,54 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    const enderecoExistente = document.getElementById('endereco_existente');
-    const novoEndereco = document.getElementById('novo_endereco');
-    const enderecosExistentes = document.getElementById('enderecos_existentes');
-    const formNovoEndereco = document.getElementById('form_novo_endereco');
-    
-    if (enderecoExistente && novoEndereco) {
-        function toggleEndereco() {
-            if (enderecoExistente.checked) {
-                enderecosExistentes.style.display = 'block';
-                formNovoEndereco.style.display = 'none';
-            } else {
-                enderecosExistentes.style.display = 'none';
-                formNovoEndereco.style.display = 'block';
-            }
-        }
-        
-        enderecoExistente.addEventListener('change', toggleEndereco);
-        novoEndereco.addEventListener('change', toggleEndereco);
-    }
+	const enderecoExistente = document.getElementById('endereco_existente');
+	const novoEndereco = document.getElementById('novo_endereco');
+	const enderecosExistentes = document.getElementById('enderecos_existentes');
+	const formNovoEndereco = document.getElementById('form_novo_endereco');
+
+	function setFieldsState(containerSelector, enable) {
+		const container = document.querySelector(containerSelector);
+		if (!container) return;
+		const fields = container.querySelectorAll('input, select, textarea');
+		const requiredNames = ['nome_endereco','cep','rua','numero','bairro','cidade','estado'];
+
+		fields.forEach(f => {
+			f.disabled = !enable;
+			f.required = enable && requiredNames.includes(f.name);
+		});
+	}
+
+	function setMode(isNovo) {
+		if (isNovo) {
+			formNovoEndereco.style.display = 'block';
+			enderecosExistentes && (enderecosExistentes.style.display = 'none');
+			setFieldsState('#form_novo_endereco', true);
+
+			document.querySelectorAll('input[name="endereco_id"]').forEach(r => {
+				r.required = false;
+				r.disabled = true;
+			});
+		} else {
+			formNovoEndereco.style.display = 'none';
+			enderecosExistentes && (enderecosExistentes.style.display = 'block');
+			setFieldsState('#form_novo_endereco', false);
+
+			const radios = document.querySelectorAll('input[name="endereco_id"]');
+			radios.forEach(r => { r.disabled = false; r.required = false; });
+			if (radios.length) {
+				if (![...radios].some(r => r.checked)) radios[0].checked = true;
+				radios[0].required = true;
+			}
+		}
+	}
+
+
+	if (enderecoExistente && novoEndereco) {
+		enderecoExistente.addEventListener('change', () => setMode(false));
+		novoEndereco.addEventListener('change', () => setMode(true));
+
+		setMode(novoEndereco && novoEndereco.checked);
+	}
 });
 </script>
 {% endblock %}

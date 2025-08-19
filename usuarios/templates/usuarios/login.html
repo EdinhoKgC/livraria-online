@@ -16,7 +16,6 @@
                     <form method="post">
                         {% csrf_token %}
                         
-                        <!-- Email -->
                         <div class="mb-3">
                             <label for="{{ form.email.id_for_label }}" class="form-label">
                                 <strong>E-mail</strong>
@@ -31,7 +30,6 @@
                             {% endif %}
                         </div>
                         
-                        <!-- Senha -->
                         <div class="mb-4">
                             <label for="{{ form.password.id_for_label }}" class="form-label">
                                 <strong>Senha</strong>
@@ -46,7 +44,6 @@
                             {% endif %}
                         </div>
                         
-                        <!-- Botão de login -->
                         <div class="d-grid">
                             <button type="submit" class="btn btn-primary btn-lg">
                                 <i class="bi bi-box-arrow-in-right"></i> Entrar
@@ -54,7 +51,6 @@
                         </div>
                     </form>
                     
-                    <!-- Links adicionais -->
                     <div class="text-center mt-3">
                         <p class="mb-0">
                             Não tem uma conta? 

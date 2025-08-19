@@ -18,36 +18,134 @@
                 <input type="text" name="categoria" class="form-control" placeholder="Categoria" value="{{ request.GET.categoria }}">
             </div>
             <div class="col-md-3">
-                <button type="submit" class="btn btn-primary">Filtrar</button>
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-search"></i> Buscar
+                </button>
             </div>
         </div>
     </form>
 
+    {% if tem_busca %}
+        <div class="alert alert-info">
+            <i class="bi bi-info-circle"></i>
+            Resultados da busca para:
+            {% if titulo_busca %}<strong>Título:</strong> {{ titulo_busca }}{% endif %}
+            {% if autor_busca %}<strong>Autor:</strong> {{ autor_busca }}{% endif %}
+            {% if categoria_busca %}<strong>Categoria:</strong> {{ categoria_busca }}{% endif %}
+        </div>
+    {% endif %}
+
     <div class="row">
         {% for livro in livros %}
             <div class="col-md-4 mb-4">
-                <div class="card">
+                <div class="card h-100">
                     {% if livro.capa %}
-                        <img src="{{ livro.capa }}" class="card-img-top" alt="Capa do livro" style="height: 200px; object-fit: cover;">
+                        <img src="{{ livro.capa }}" class="card-img-top" alt="Capa do {{ livro.titulo }}" 
+                             style="height: 200px; object-fit: cover;">
+                    {% else %}
+                        <div class="bg-light rounded d-flex align-items-center justify-content-center" 
+                             style="height: 200px;">
+                            <small class="text-muted">Sem imagem</small>
+                        </div>
                     {% endif %}
-                    <div class="card-body">
+                    <div class="card-body d-flex flex-column">
                         <h5 class="card-title">{{ livro.titulo }}</h5>
-                        <p class="card-text">
+                        <p class="card-text flex-grow-1">
                             <strong>Autor:</strong> {{ livro.autor.nome }}<br>
                             <strong>Categoria:</strong> {{ livro.categoria.nome }}<br>
-                            <strong>Publicação:</strong> {{ livro.data_publicacao|date:"d/m/Y" }}
+                            {% if livro.data_publicacao %}
+                                <strong>Ano:</strong> {{ livro.data_publicacao|date:"Y" }}<br>
+                            {% endif %}
+                            {% if livro.publicadora %}
+                                <strong>Editora:</strong> {{ livro.publicadora }}<br>
+                            {% endif %}
+                            {% if livro.numero_paginas %}
+                                <strong>Páginas:</strong> {{ livro.numero_paginas }}<br>
+                            {% endif %}
                         </p>
-                        <a href="{% url 'catalogo:detalhes_livro' livro.id %}" class="btn btn-primary">Ver Detalhes</a>
+                        {% if livro.sinopse %}
+                            <p class="card-text">
+                                <small class="text-muted">
+                                    <strong>Sinopse:</strong> {{ livro.sinopse|truncatewords:15 }}
+                                </small>
+                            </p>
+                        {% endif %}
+                        <div class="mt-auto">
+                            <a href="{% url 'catalogo:detalhes_livro' livro.id %}" class="btn btn-primary">
+                                <i class="bi bi-eye"></i> Ver Detalhes
+                            </a>
+                            {% if livro.externo_ID %}
+                                <small class="text-muted d-block mt-1">
+                                    <i class="bi bi-globe"></i> Dados da OpenLibrary
+                                </small>
+                            {% endif %}
+                        </div>
                     </div>
                 </div>
             </div>
         {% empty %}
             <div class="col-12">
-                <div class="alert alert-info">
-                    Nenhum livro encontrado.
+                <div class="alert alert-info text-center">
+                    <i class="bi bi-info-circle"></i>
+                    {% if tem_busca %}
+                        Nenhum livro encontrado para sua busca.
+                    {% else %}
+                        Nenhum livro disponível no catálogo.
+                    {% endif %}
                 </div>
             </div>
         {% endfor %}
     </div>
+
+    {% if page_obj.has_other_pages %}
+        <nav aria-label="Navegação de páginas" class="mt-4">
+            <ul class="pagination justify-content-center">
+                {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page=1{% if request.GET.titulo %}&titulo={{ request.GET.titulo }}{% endif %}{% if request.GET.autor %}&autor={{ request.GET.autor }}{% endif %}{% if request.GET.categoria %}&categoria={{ request.GET.categoria }}{% endif %}">
+                            <i class="bi bi-chevron-double-left"></i> Primeira
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if request.GET.titulo %}&titulo={{ request.GET.titulo }}{% endif %}{% if request.GET.autor %}&autor={{ request.GET.autor }}{% endif %}{% if request.GET.categoria %}&categoria={{ request.GET.categoria }}{% endif %}">
+                            <i class="bi bi-chevron-left"></i> Anterior
+                        </a>
+                    </li>
+                {% endif %}
+
+                {% for num in page_obj.paginator.page_range %}
+                    {% if page_obj.number == num %}
+                        <li class="page-item active">
+                            <span class="page-link">{{ num }}</span>
+                        </li>
+                    {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ num }}{% if request.GET.titulo %}&titulo={{ request.GET.titulo }}{% endif %}{% if request.GET.autor %}&autor={{ request.GET.autor }}{% endif %}{% if request.GET.categoria %}&categoria={{ request.GET.categoria }}{% endif %}">{{ num }}</a>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+
+                {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if request.GET.titulo %}&titulo={{ request.GET.titulo }}{% endif %}{% if request.GET.autor %}&autor={{ request.GET.autor }}{% endif %}{% if request.GET.categoria %}&categoria={{ request.GET.categoria }}{% endif %}">
+                            Próxima <i class="bi bi-chevron-right"></i>
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.titulo %}&titulo={{ request.GET.titulo }}{% endif %}{% if request.GET.autor %}&autor={{ request.GET.autor }}{% endif %}{% if request.GET.categoria %}&categoria={{ request.GET.categoria }}{% endif %}">
+                            Última <i class="bi bi-chevron-double-right"></i>
+                        </a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+        
+        <div class="text-center mt-2">
+            <small class="text-muted">
+                Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }} 
+                ({{ page_obj.paginator.count }} livro{{ page_obj.paginator.count|pluralize:"s" }} no total)
+            </small>
+        </div>
+    {% endif %}
 </div>
 {% endblock %}
