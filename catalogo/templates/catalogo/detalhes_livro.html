@@ -5,7 +5,7 @@
 {% block content %}
 <div class="container">
     <div class="row">
-        <!-- Imagem do livro -->
+        
         <div class="col-md-4">
             {% if livro.capa %}
                 <img src="{{ livro.capa }}" alt="Capa do {{ livro.titulo }}" class="img-fluid rounded shadow">
@@ -16,11 +16,9 @@
             {% endif %}
         </div>
         
-        <!-- Informações do livro -->
         <div class="col-md-8">
             <h1 class="mb-3">{{ livro.titulo }}</h1>
             
-            <!-- Informações básicas -->
             <div class="card mb-4">
                 <div class="card-header">
                     <h5 class="mb-0"><i class="bi bi-info-circle"></i> Informações do Livro</h5>
@@ -49,7 +47,6 @@
                 </div>
             </div>
             
-            <!-- Sinopse -->
             <div class="card mb-4">
                 <div class="card-header">
                     <h5 class="mb-0"><i class="bi bi-book"></i> Sinopse</h5>
@@ -63,7 +60,6 @@
                 </div>
             </div>
             
-            <!-- Botões de ação -->
             <div class="d-grid gap-2 d-md-block">
                 <a href="{% url 'carrinho:adicionar_ao_carrinho' livro.id %}" class="btn btn-primary btn-lg">
                     <i class="bi bi-cart-plus"></i> Adicionar ao Carrinho

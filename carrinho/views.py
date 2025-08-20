@@ -51,7 +51,6 @@ def visualizar_carrinho(request):
 
     itens = carrinho.itens.all() if carrinho else []
     
-    # Calcular totais
     total_itens = len(itens)
     total_quantidade = sum(item.quantidade for item in itens)
 

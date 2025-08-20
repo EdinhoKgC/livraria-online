@@ -1,2 +1,4 @@
-Django>=4.2.0
-requests>=2.31.0
+Django==4.2.7
+requests==2.31.0
+weasyprint==60.1
+Pillow==10.0.1

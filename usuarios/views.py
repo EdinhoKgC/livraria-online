@@ -25,7 +25,7 @@ def cadastro(request):
     if request.method == "POST":
         form = CadastroForm(request.POST)
         if form.is_valid():
-            # capturar session_key ANTES do login (Django troca a sessão no login)
+            # capturar session_key ANTES do login 
             pre_session_key = request.session.session_key
             if not pre_session_key:
                 request.session.create()
@@ -47,7 +47,7 @@ def login_view(request):
     if request.method == "POST":
         form = LoginForm(request.POST)
         if form.is_valid():
-            # capturar session_key ANTES do login (Django troca a sessão no login)
+            # capturar session_key ANTES do login 
             pre_session_key = request.session.session_key
             if not pre_session_key:
                 request.session.create()

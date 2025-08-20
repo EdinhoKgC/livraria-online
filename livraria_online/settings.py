@@ -25,7 +25,13 @@ SECRET_KEY = 'django-insecure-_bxw2w17)c%i9^!b%w%xwky0iatjbuq#f&^!&%5_!#o*mwob@5
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*', '.ngrok.io', '.ngrok-free.app']
+
+
+CSRF_TRUSTED_ORIGINS = [
+    'https://*.ngrok.io',
+    'https://*.ngrok-free.app',
+]
 
 
 # Application definition
@@ -116,7 +122,7 @@ AUTH_USER_MODEL = 'usuarios.CustomUser'
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'America/Sao_Paulo'
 
 USE_I18N = True
 

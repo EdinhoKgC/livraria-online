@@ -7,11 +7,10 @@
     <h1 class="mb-4">Histórico de Compras</h1>
 
     <div class="d-flex justify-content-start">
-        <a class="btn btn-success btn-lg" href="{% url 'compras:exportar_lista_compras' %}">
+        <a id="btnAbrirPdf" class="btn btn-success btn-lg" href="{% url 'compras:exportar_lista_compras' %}" target="_blank" rel="noopener noreferrer">
             <h4 class="mb-0">Exportar lista de compras</h4>
         </a>
-    </div>
-    
+    </div>    
     
     {% if compras %}
         <div class="row">
@@ -135,5 +134,11 @@ function toggleDetalhes(compraId) {
         button.innerHTML = '<i class="bi bi-eye"></i> Ver Detalhes';
     }
 }
+
+document.getElementById('btnAbrirPdf').addEventListener('click', function(e) {
+    e.preventDefault();
+    window.open("{% url 'compras:exportar_lista_compras' %}", "_blank");
+  });
 </script>
+
 {% endblock %}

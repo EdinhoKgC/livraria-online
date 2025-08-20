@@ -53,23 +53,8 @@
                         <p class="card-text flex-grow-1">
                             <strong>Autor:</strong> {{ livro.autor.nome }}<br>
                             <strong>Categoria:</strong> {{ livro.categoria.nome }}<br>
-                            {% if livro.data_publicacao %}
-                                <strong>Ano:</strong> {{ livro.data_publicacao|date:"Y" }}<br>
-                            {% endif %}
-                            {% if livro.publicadora %}
-                                <strong>Editora:</strong> {{ livro.publicadora }}<br>
-                            {% endif %}
-                            {% if livro.numero_paginas %}
-                                <strong>Páginas:</strong> {{ livro.numero_paginas }}<br>
-                            {% endif %}
+                            <strong>Data de Publicação:</strong> {{ livro.data_publicacao|date:"d/m/Y" }}
                         </p>
-                        {% if livro.sinopse %}
-                            <p class="card-text">
-                                <small class="text-muted">
-                                    <strong>Sinopse:</strong> {{ livro.sinopse|truncatewords:15 }}
-                                </small>
-                            </p>
-                        {% endif %}
                         <div class="mt-auto">
                             <a href="{% url 'catalogo:detalhes_livro' livro.id %}" class="btn btn-primary">
                                 <i class="bi bi-eye"></i> Ver Detalhes
@@ -134,18 +119,17 @@
                     <li class="page-item">
                         <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.titulo %}&titulo={{ request.GET.titulo }}{% endif %}{% if request.GET.autor %}&autor={{ request.GET.autor }}{% endif %}{% if request.GET.categoria %}&categoria={{ request.GET.categoria }}{% endif %}">
                             Última <i class="bi bi-chevron-double-right"></i>
-                        </a>
-                    </li>
-                {% endif %}
-            </ul>
-        </nav>
-        
-        <div class="text-center mt-2">
-            <small class="text-muted">
-                Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }} 
-                ({{ page_obj.paginator.count }} livro{{ page_obj.paginator.count|pluralize:"s" }} no total)
-            </small>
-        </div>
-    {% endif %}
-</div>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            
+            <div class="text-center mt-2">
+                <small class="text-muted">
+                    Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }} 
+                    ({{ page_obj.paginator.count }} livro{{ page_obj.paginator.count|pluralize:"s" }} no total)
+                </small>
+            </div>
+        {% endif %}
+    </div>
 {% endblock %}

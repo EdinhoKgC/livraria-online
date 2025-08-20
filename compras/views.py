@@ -7,6 +7,7 @@ from django.template.loader import render_to_string
 import weasyprint
 from usuarios.models import Endereco
 from usuarios.forms import EnderecoForm
+from django.utils import timezone
 
 @login_required(login_url='usuarios:login_view')
 def finalizar_compra(request):
@@ -38,7 +39,6 @@ def finalizar_compra(request):
                     'novo_endereco': True
                 })
         else:
-
             if endereco_id:
                 try:
                     endereco_obj = get_object_or_404(Endereco, id=endereco_id, user=request.user)
@@ -75,18 +75,50 @@ def pedido_confirmado(request, compra_id):
 @login_required
 def historico_compras(request):
     compras = Compra.objects.filter(user=request.user).order_by('-data_compra')
+    
+    # Calcular totais para cada compra
+    for compra in compras:
+        compra.total_items = sum(item.quantidade for item in compra.itens.all())
+        compra.total_livros = compra.itens.count()
+    
     return render(request, 'compras/historico_compras.html', {'compras': compras})
 
 @login_required
 def exportar_lista_compras(request):
     compras = Compra.objects.filter(user=request.user)
     
-    html_string = render_to_string('compras/historico_compras_pdf.html', {'compras': compras, 'user': request.user})
+    # Calcular total de itens comprados
+    total_items = sum(
+        item.quantidade
+        for compra in compras
+        for item in compra.itens.all()
+    )
+    
+    # Calcular total de livros únicos
+    total_livros_unicos = sum(
+        compra.itens.count()
+        for compra in compras
+    )
+    
+    # Calcular totais para cada compra individual
+    for compra in compras:
+        compra.total_items_compra = sum(item.quantidade for item in compra.itens.all())
+        compra.total_livros_compra = compra.itens.count()
+    
+    context = {
+        'compras': compras, 
+        'user': request.user, 
+        'total_items': total_items,
+        'total_livros_unicos': total_livros_unicos,
+        'data_geracao': timezone.now()
+    }
+    
+    html_string = render_to_string('compras/historico_compras_pdf.html', context)
     
     arquivo_pdf = weasyprint.HTML(string=html_string).write_pdf()
     
     response = HttpResponse(arquivo_pdf, content_type='application/pdf')
-    response['Content-Disposition'] = 'attachment;filename="historico_compras.pdf"'
+    response['Content-Disposition'] = 'inline; filename="historico_compras.pdf"'
     
     return response
 # Create your views here.
