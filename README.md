@@ -63,8 +63,12 @@ pip install -r requirements.txt
 
 
 4. Configure o banco de dados no `settings.py` (ajuste usuário, senha e host conforme seu ambiente).
+- Caso use o PostgreSQL, será necessário instalar a dependencia abaixo:
+```
+pip install psycopg2-binary
+```
 
-5. Rode as migrações:  
+6. Rode as migrações:  
 ```
 python manage.py makemigrations
 python manage.py migrate
