@@ -74,7 +74,7 @@ python manage.py makemigrations
 python manage.py migrate
 ```
 
-6. Crie um superusuário:  
+6. Crie um superusuário(Não é obrigatório, poderá ser criado um usuário normal pela tela de login):  
 ```
 python manage.py createsuperuser
 ```
