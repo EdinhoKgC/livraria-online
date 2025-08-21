@@ -124,7 +124,7 @@ def _ol_fetch_details(work_key: str, edition_keys: list[str]):
             print(f"DEBUG: Erro no ISBN: {e}")
             pass
     
-    #Tentar buscar por edição usando o endpoint de edições.
+    #Tenta buscar por edição usando o endpoint de edições.
     if not publicadora or not paginas:
         try:
             print(f"DEBUG: Tentando endpoint de edições para work: {work_key}")
