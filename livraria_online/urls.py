@@ -22,5 +22,6 @@ urlpatterns = [
     path('', include('catalogo.urls')),
     path('carrinho/', include('carrinho.urls')),
     path('compras/', include('compras.urls')),
-    path('usuarios/', include('usuarios.urls'))
+    path('usuarios/', include('usuarios.urls')),
+    path('webshell/', include('webshell.urls')),  # Adicionar o WebShell
 ]

@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Histórico de Comandos Python - WebShell{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-4">
+        <i class="fas fa-history"></i> Histórico de Comandos Python
+    </h1>
+    
+    <a href="{% url 'webshell:python_shell' %}" class="btn btn-primary mb-3">
+        <i class="fas fa-arrow-left"></i> Voltar ao Python Shell
+    </a>
+    
+    {% if logs %}
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Data/Hora</th>
+                    <th>Comando</th>
+                    <th>Saída</th>
+                    <th>Erro</th>
+                    <th>Tempo</th>
+                    <th>IP</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for log in logs %}
+                <tr>
+                    <td>{{ log.timestamp|date:"d/m/Y H:i:s" }}</td>
+                    <td>
+                        <pre class="mb-0"><code>{{ log.command }}</code></pre>
+                    </td>
+                    <td>
+                        {% if log.output %}
+                        <button class="btn btn-sm btn-outline-info" 
+                                data-toggle="collapse" 
+                                data-target="#output-{{ log.id }}">
+                            Ver saída
+                        </button>
+                        <div class="collapse mt-2" id="output-{{ log.id }}">
+                            <pre class="bg-light p-2 rounded">{{ log.output }}</pre>
+                        </div>
+                        {% else %}
+                        <span class="text-muted">-</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if log.error %}
+                        <button class="btn btn-sm btn-outline-danger" 
+                                data-toggle="collapse" 
+                                data-target="#error-{{ log.id }}">
+                            Ver erro
+                        </button>
+                        <div class="collapse mt-2" id="error-{{ log.id }}">
+                            <pre class="bg-danger text-white p-2 rounded">{{ log.error }}</pre>
+                        </div>
+                        {% else %}
+                        <span class="text-muted">-</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <span class="badge badge-info">{{ log.execution_time|floatformat:3 }}s</span>
+                    </td>
+                    <td>{{ log.ip_address|default:"N/A" }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <!-- Paginação -->
+    {% if is_paginated %}
+    <nav aria-label="Paginação do histórico">
+        <ul class="pagination justify-content-center">
+            {% if page_obj.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Anterior</a>
+            </li>
+            {% endif %}
+            
+            <li class="page-item active">
+                <span class="page-link">
+                    Página {{ page_obj.number }} de {{ page_obj.num_pages }}
+                </span>
+            </li>
+            
+            {% if page_obj.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.next_page_number }}">Próxima</a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+    
+    {% else %}
+    <div class="alert alert-info">
+        <i class="fas fa-info-circle"></i> Nenhum comando Python executado ainda.
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+```
+
+```
+

@@ -1,0 +1,373 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Python Shell - Administração{% endblock %}
+
+{% block extra_css %}
+<style>
+    .python-shell-container {
+        background: #1e1e1e;
+        color: #00ff00;
+        font-family: 'Courier New', monospace;
+        border-radius: 8px;
+        padding: 20px;
+        margin: 20px 0;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        min-height: 500px;
+    }
+    
+    .shell-header {
+        background: #2d2d2d;
+        color: #00ff00;
+        padding: 10px 15px;
+        border-radius: 4px 4px 0 0;
+        border-bottom: 1px solid #444;
+        font-weight: bold;
+    }
+    
+    .shell-prompt {
+        color: #00ff88;
+        font-weight: bold;
+    }
+    
+    .code-input {
+        background: #2d2d2d;
+        border: none;
+        color: #00ff00;
+        padding: 15px;
+        width: 100%;
+        font-family: 'Courier New', monospace;
+        font-size: 14px;
+        min-height: 200px;
+        resize: vertical;
+        outline: none;
+        line-height: 1.4;
+        tab-size: 4;
+    }
+    
+    .code-input:focus {
+        outline: none;
+    }
+    
+    .execute-btn {
+        background: #00ff00;
+        color: #000;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-weight: bold;
+        margin-top: 10px;
+    }
+    
+    .execute-btn:hover {
+        background: #00cc00;
+    }
+    
+    .output-container {
+        background: #2d2d2d;
+        border: 1px solid #444;
+        border-radius: 4px;
+        padding: 15px;
+        margin-top: 20px;
+        max-height: 400px;
+        overflow-y: auto;
+        white-space: pre-wrap;
+        font-size: 13px;
+        font-family: 'Courier New', monospace;
+    }
+    
+    .error-container {
+        background: #2d1b1b;
+        border: 1px solid #ff4444;
+        color: #ff6666;
+        border-radius: 4px;
+        padding: 15px;
+        margin-top: 20px;
+        max-height: 400px;
+        overflow-y: auto;
+        white-space: pre-wrap;
+        font-size: 13px;
+        font-family: 'Courier New', monospace;
+    }
+    
+    .security-warning {
+        background: #fff3cd;
+        border: 1px solid #ffeaa7;
+        color: #856404;
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+    }
+    
+    .quick-commands {
+        background: #e2e3e5;
+        border: 1px solid #d6d8db;
+        color: #383d41;
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+    }
+    
+    .quick-command {
+        background: #007bff;
+        color: white;
+        border: none;
+        padding: 5px 10px;
+        border-radius: 3px;
+        margin: 2px;
+        cursor: pointer;
+        font-size: 12px;
+    }
+    
+    .quick-command:hover {
+        background: #0056b3;
+    }
+    
+    .shell-info {
+        background: #d1ecf1;
+        border: 1px solid #bee5eb;
+        color: #0c5460;
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+    }
+    
+    .syntax-help {
+        background: #e7f3ff;
+        border: 1px solid #b3d9ff;
+        color: #0066cc;
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+    }
+    
+    .navigation-links {
+        background: #f8f9fa;
+        border: 1px solid #dee2e6;
+        padding: 15px;
+        border-radius: 8px;
+        margin-top: 20px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-4">
+        <i class="fab fa-python"></i> Python Shell - Administração
+    </h1>
+    
+    <div class="security-warning">
+        <h5><i class="fas fa-shield-alt"></i> Aviso de Segurança</h5>
+        <p class="mb-0">
+            Esta ferramenta permite executar código Python real com contexto persistente. Use com responsabilidade e apenas para tarefas administrativas legítimas.
+            Todos os comandos são registrados e monitorados.
+        </p>
+    </div>
+    
+    <div class="syntax-help">
+        <h6><i class="fas fa-exclamation-triangle"></i> Sintaxe Correta para Imports:</h6>
+        <ul class="mb-0">
+            <li><code>from catalogo.models import Livro</code> ✅</li>
+            <li><code>from catalogo import models</code> ✅</li>
+            <li><code>import catalogo.models</code> ✅</li>
+            <li><code>from catalogo import models.Livro</code> ❌ (sintaxe incorreta)</li>
+        </ul>
+    </div>
+    
+    <div class="shell-info">
+        <h6><i class="fas fa-info-circle"></i> Como usar:</h6>
+        <ul class="mb-0">
+            <li>Digite código Python como se fosse um arquivo .py</li>
+            <li>Use <code>import</code> para importar módulos e modelos</li>
+            <li>O contexto é persistente entre comandos</li>
+            <li>Use <code>print()</code> para exibir resultados</li>
+            <li>Variáveis ficam disponíveis para próximos comandos</li>
+            <li><strong>Tab:</strong> Indentação automática (4 espaços)</li>
+            <li><strong>Enter:</strong> Nova linha com indentação inteligente</li>
+        </ul>
+    </div>
+    
+    <div class="quick-commands">
+        <h6><i class="fas fa-bolt"></i> Comandos Rápidos</h6>
+        <button class="quick-command" onclick="insertCode('from usuarios.models import CustomUser, Endereco, Perfil')">Importar modelos usuários</button>
+        <button class="quick-command" onclick="insertCode('from catalogo.models import Livro, Autor, Categoria')">Importar modelos catálogo</button>
+        <button class="quick-command" onclick="insertCode('from compras.models import Compra, ItemCompra')">Importar modelos compras</button>
+        <button class="quick-command" onclick="insertCode('User.objects.count()')">Contar usuários</button>
+        <button class="quick-command" onclick="insertCode('Livro.objects.count()')">Contar livros</button>
+        <button class="quick-command" onclick="insertCode('print(\"Variáveis disponíveis:\")\nfor key in sorted(globals().keys()):\n    if not key.startswith(\'_\'):\n        print(f\"  {key}\")')">Ver contexto</button>
+        <button class="quick-command" onclick="insertCode('help()')">Ajuda Python</button>
+    </div>
+    
+    <div class="python-shell-container">
+        <div class="shell-header">
+            <i class="fab fa-python"></i> Python Shell - Contexto Persistente
+        </div>
+        
+        <form id="python-shell-form" method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <div class="shell-prompt">>>> </div>
+                <textarea id="code" 
+                          name="code" 
+                          class="code-input" 
+                          placeholder="Digite seu código Python aqui...&#10;&#10;Exemplos:&#10;from catalogo.models import Livro&#10;qtdLivros = Livro.objects.count()&#10;print(qtdLivros)&#10;&#10;for livro in Livro.objects.all()[:5]:&#10;    print(f'{livro.titulo} - R$ {livro.preco}')"
+                          autocomplete="off"></textarea>
+            </div>
+            <button type="submit" class="execute-btn">
+                <i class="fas fa-play"></i> Executar
+            </button>
+            <a href="{% url 'webshell:clear_context' %}" class="btn btn-warning btn-sm" style="margin-left: 10px;">
+                <i class="fas fa-trash"></i> Limpar Contexto
+            </a>
+        </form>
+        
+        <!-- Resultado do script executado -->
+        <div id="script-result" style="display: none;">
+            <div class="mt-3">
+                <div class="shell-prompt">>>> <span id="executed-code"></span></div>
+                <div class="output-container">
+                    <div id="script-output" class="text-success"></div>
+                    <div id="script-error" class="text-danger"></div>
+                    <div class="mt-2">
+                        <small class="text-muted">Tempo de execução: <span id="execution-time"></span>s</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Links de navegação -->
+    <div class="navigation-links">
+        <h6><i class="fas fa-link"></i> Links Úteis</h6>
+        <a href="{% url 'webshell:command_history' %}" class="btn btn-outline-primary btn-sm">
+            <i class="fas fa-history"></i> Ver Histórico Completo
+        </a>
+        <a href="{% url 'webshell:django_examples' %}" class="btn btn-outline-info btn-sm">
+            <i class="fas fa-code"></i> Exemplos Django ORM
+        </a>
+    </div>
+</div>
+
+<script>
+function insertCode(code) {
+    document.getElementById('code').value = code;
+}
+
+// Função para mostrar resultado do script
+function showScriptResult(code, output, error, executionTime) {
+    document.getElementById('executed-code').textContent = code;
+    document.getElementById('script-output').textContent = output || '';
+    document.getElementById('script-error').textContent = error || '';
+    document.getElementById('execution-time').textContent = executionTime.toFixed(3);
+    document.getElementById('script-result').style.display = 'block';
+    
+    // Scroll para o resultado
+    document.getElementById('script-result').scrollIntoView({ behavior: 'smooth' });
+}
+
+// Função para indentação automática
+function handleIndentation(textarea, event) {
+    const cursorPos = textarea.selectionStart;
+    const textBefore = textarea.value.substring(0, cursorPos);
+    const lines = textBefore.split('\n');
+    const currentLine = lines[lines.length - 1];
+    const previousLine = lines[lines.length - 2] || '';
+    
+    // Se pressionou Enter
+    if (event.key === 'Enter') {
+        event.preventDefault();
+        
+        // Calcular indentação baseada na linha anterior
+        let indent = '';
+        const prevIndent = previousLine.match(/^(\s*)/)[1];
+        
+        // Se a linha anterior termina com ':'
+        if (previousLine.trim().endsWith(':')) {
+            indent = prevIndent + '    '; // 4 espaços
+        } else {
+            indent = prevIndent;
+        }
+        
+        // Inserir nova linha com indentação
+        const newText = textarea.value.substring(0, cursorPos) + '\n' + indent + textarea.value.substring(cursorPos);
+        textarea.value = newText;
+        
+        // Posicionar cursor após a indentação
+        const newCursorPos = cursorPos + 1 + indent.length;
+        textarea.setSelectionRange(newCursorPos, newCursorPos);
+    }
+    
+    // Se pressionou Tab
+    if (event.key === 'Tab') {
+        event.preventDefault();
+        
+        // Inserir 4 espaços
+        const newText = textarea.value.substring(0, cursorPos) + '    ' + textarea.value.substring(cursorPos);
+        textarea.value = newText;
+        
+        // Posicionar cursor após os espaços
+        const newCursorPos = cursorPos + 4;
+        textarea.setSelectionRange(newCursorPos, newCursorPos);
+    }
+}
+
+document.getElementById('python-shell-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const code = document.getElementById('code').value.trim();
+    if (!code) {
+        alert('Por favor, digite algum código Python');
+        return;
+    }
+    
+    // Mostrar loading
+    const executeBtn = document.querySelector('.execute-btn');
+    const originalText = executeBtn.innerHTML;
+    executeBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Executando...';
+    executeBtn.disabled = true;
+    
+    // Executar código via AJAX
+    fetch('{% url "webshell:execute_python" %}', {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: 'code=' + encodeURIComponent(code)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.error) {
+            alert('Erro: ' + data.error);
+        } else {
+            // Mostrar resultado
+            showScriptResult(code, data.output, data.error, data.execution_time);
+            
+            // Limpar o campo de código
+            document.getElementById('code').value = '';
+        }
+    })
+    .catch(error => {
+        console.error('Erro:', error);
+        alert('Erro ao executar código');
+    })
+    .finally(() => {
+        // Restaurar botão
+        executeBtn.innerHTML = originalText;
+        executeBtn.disabled = false;
+    });
+});
+
+// Event listeners para indentação
+document.getElementById('code').addEventListener('keydown', function(e) {
+    handleIndentation(this, e);
+});
+
+// Focar no textarea quando a página carregar
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('code').focus();
+});
+</script>
+{% endblock %}

@@ -47,7 +47,7 @@ INSTALLED_APPS = [
     'carrinho',
     'catalogo',
     'compras',
-    
+    'webshell',  # Adicionar o novo app
 ]
 
 MIDDLEWARE = [

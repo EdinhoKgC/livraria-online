@@ -5,6 +5,7 @@
     <title>{% block title %}Livraria Online{% endblock %}</title>
     
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
 
         .form-control {
@@ -43,6 +44,20 @@
             border-bottom: 1px solid #dee2e6;
         }
 
+        /* Estilo para dropdown de administração */
+        .admin-dropdown .dropdown-menu {
+            border: 1px solid #dc3545;
+        }
+        
+        .admin-dropdown .dropdown-item {
+            color: #dc3545;
+        }
+        
+        .admin-dropdown .dropdown-item:hover {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
     </style>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     {% block extra_css %}{% endblock %}
@@ -51,39 +66,94 @@
     
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
         <div class="container">
-            <a class="navbar-brand" href="{% url 'catalogo:listar_livros' %}">Livraria Online</a>
+            <a class="navbar-brand" href="{% url 'catalogo:listar_livros' %}">
+                <i class="fas fa-book"></i> Livraria Online
+            </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'catalogo:listar_livros' %}">Catálogo</a>
+                        <a class="nav-link" href="{% url 'catalogo:listar_livros' %}">
+                            <i class="fas fa-th-large"></i> Catálogo
+                        </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'carrinho:visualizar_carrinho' %}">Carrinho</a>
+                        <a class="nav-link" href="{% url 'carrinho:visualizar_carrinho' %}">
+                            <i class="fas fa-shopping-cart"></i> Carrinho
+                        </a>
                     </li>
                     {% if user.is_authenticated %}
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'compras:historico_compras' %}">Minhas Compras</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'usuarios:logout_view' %}">Sair</a>
-                    </li>
-                    {% else %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'usuarios:login_view' %}">Entrar</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'usuarios:cadastro' %}">Cadastrar</a>
+                        <a class="nav-link" href="{% url 'compras:historico_compras' %}">
+                            <i class="fas fa-history"></i> Minhas Compras
+                        </a>
                     </li>
                     {% endif %}
                 </ul>
-                {% if user.is_authenticated %}
-                <span class="navbar-text text-light">
-                    Olá, {% if user.perfil.nome %}{{ user.perfil.nome }}{% else %}{{ user.email }}{% endif %}!
-                </span>
-                {% endif %}
+                
+                <ul class="navbar-nav">
+                    {% if user.is_authenticated %}
+                        <!-- Menu de Administração -->
+                        {% if user.is_superuser or user.is_staff %}
+                        <li class="nav-item dropdown admin-dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="adminDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-cog"></i> Administração
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="adminDropdown">
+                                <li>
+                                    <a class="dropdown-item" href="/admin/" target="_blank">
+                                        <i class="fas fa-tachometer-alt"></i> Painel Admin
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="{% url 'webshell:python_shell' %}">
+                                        <i class="fab fa-python"></i> Python Shell
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="{% url 'webshell:django_examples' %}">
+                                        <i class="fas fa-code"></i> Exemplos ORM
+                                    </a>
+                                </li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <a class="dropdown-item" href="{% url 'webshell:command_history' %}">
+                                        <i class="fas fa-history"></i> Histórico Shell
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                        {% endif %}
+                        
+                        <!-- Menu do Usuário -->
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-user"></i> 
+                                {% if user.perfil.nome %}{{ user.perfil.nome }}{% else %}{{ user.email }}{% endif %}
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                                <li>
+                                    <a class="dropdown-item" href="{% url 'usuarios:logout_view' %}">
+                                        <i class="fas fa-sign-out-alt"></i> Sair
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'usuarios:login_view' %}">
+                                <i class="fas fa-sign-in-alt"></i> Entrar
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'usuarios:cadastro' %}">
+                                <i class="fas fa-user-plus"></i> Cadastrar
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
             </div>
         </div>
     </nav>
