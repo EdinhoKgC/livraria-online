@@ -28,7 +28,7 @@
                         <i class="fas fa-copy"></i> Copiar
                     </button>
                     <button class="btn btn-sm btn-success" 
-                            onclick="insertCode('{{ example.code|escapejs }}')">
+                            onclick="executeCode('{{ example.code|escapejs }}')">
                         <i class="fas fa-play"></i> Executar
                     </button>
                 </div>
@@ -45,7 +45,7 @@ function copyToClipboard(text) {
     });
 }
 
-function insertCode(code) {
+function executeCode(code) {
     // Redirecionar para o shell com o código
     const form = document.createElement('form');
     form.method = 'POST';
@@ -69,6 +69,7 @@ function insertCode(code) {
 }
 </script>
 {% endblock %}
+
 ```
 
 ```

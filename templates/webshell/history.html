@@ -3,6 +3,42 @@
 
 {% block title %}Histórico de Comandos Python - WebShell{% endblock %}
 
+{% block extra_css %}
+<style>
+    .history-table {
+        font-family: 'Courier New', monospace;
+    }
+    
+    .command-cell {
+        max-width: 300px;
+        word-break: break-all;
+    }
+    
+    .output-content, .error-content {
+        max-height: 200px;
+        overflow-y: auto;
+        white-space: pre-wrap;
+        font-family: 'Courier New', monospace;
+        font-size: 12px;
+    }
+    
+    .output-content {
+        background: #f8f9fa;
+        border: 1px solid #dee2e6;
+        padding: 10px;
+        border-radius: 4px;
+    }
+    
+    .error-content {
+        background: #f8d7da;
+        border: 1px solid #f5c6cb;
+        padding: 10px;
+        border-radius: 4px;
+        color: #721c24;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 <div class="container mt-4">
     <h1 class="mb-4">
@@ -15,7 +51,7 @@
     
     {% if logs %}
     <div class="table-responsive">
-        <table class="table table-striped">
+        <table class="table table-striped history-table">
             <thead class="thead-dark">
                 <tr>
                     <th>Data/Hora</th>
@@ -24,24 +60,28 @@
                     <th>Erro</th>
                     <th>Tempo</th>
                     <th>IP</th>
+                    <th>Ações</th>
                 </tr>
             </thead>
             <tbody>
                 {% for log in logs %}
                 <tr>
                     <td>{{ log.timestamp|date:"d/m/Y H:i:s" }}</td>
-                    <td>
+                    <td class="command-cell">
                         <pre class="mb-0"><code>{{ log.command }}</code></pre>
                     </td>
                     <td>
                         {% if log.output %}
                         <button class="btn btn-sm btn-outline-info" 
-                                data-toggle="collapse" 
-                                data-target="#output-{{ log.id }}">
+                                type="button"
+                                data-bs-toggle="collapse" 
+                                data-bs-target="#output-{{ log.id }}"
+                                aria-expanded="false"
+                                aria-controls="output-{{ log.id }}">
                             Ver saída
                         </button>
                         <div class="collapse mt-2" id="output-{{ log.id }}">
-                            <pre class="bg-light p-2 rounded">{{ log.output }}</pre>
+                            <div class="output-content">{{ log.output }}</div>
                         </div>
                         {% else %}
                         <span class="text-muted">-</span>
@@ -50,21 +90,31 @@
                     <td>
                         {% if log.error %}
                         <button class="btn btn-sm btn-outline-danger" 
-                                data-toggle="collapse" 
-                                data-target="#error-{{ log.id }}">
+                                type="button"
+                                data-bs-toggle="collapse" 
+                                data-bs-target="#error-{{ log.id }}"
+                                aria-expanded="false"
+                                aria-controls="error-{{ log.id }}">
                             Ver erro
                         </button>
                         <div class="collapse mt-2" id="error-{{ log.id }}">
-                            <pre class="bg-danger text-white p-2 rounded">{{ log.error }}</pre>
+                            <div class="error-content">{{ log.error }}</div>
                         </div>
                         {% else %}
                         <span class="text-muted">-</span>
                         {% endif %}
                     </td>
                     <td>
-                        <span class="badge badge-info">{{ log.execution_time|floatformat:3 }}s</span>
+                        <span class="badge bg-info">{{ log.execution_time|floatformat:3 }}s</span>
                     </td>
                     <td>{{ log.ip_address|default:"N/A" }}</td>
+                    <td>
+                        <button class="btn btn-sm btn-success" 
+                                onclick="executeCommand('{{ log.command|escapejs }}')"
+                                title="Executar novamente">
+                            <i class="fas fa-play"></i>
+                        </button>
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>
@@ -102,7 +152,33 @@
     </div>
     {% endif %}
 </div>
+
+<script>
+function executeCommand(command) {
+    // Redirecionar para o shell com o comando
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = '{% url "webshell:python_shell" %}';
+    
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    const csrfInput = document.createElement('input');
+    csrfInput.type = 'hidden';
+    csrfInput.name = 'csrfmiddlewaretoken';
+    csrfInput.value = csrfToken;
+    
+    const codeInput = document.createElement('input');
+    codeInput.type = 'hidden';
+    codeInput.name = 'code';
+    codeInput.value = command;
+    
+    form.appendChild(csrfInput);
+    form.appendChild(codeInput);
+    document.body.appendChild(form);
+    form.submit();
+}
+</script>
 {% endblock %}
+
 ```
 
 ```

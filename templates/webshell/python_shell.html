@@ -4,6 +4,10 @@
 {% block title %}Python Shell - Administração{% endblock %}
 
 {% block extra_css %}
+<!-- Prism.js para syntax highlighting -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+
 <style>
     .python-shell-container {
         background: #1e1e1e;
@@ -31,12 +35,12 @@
     }
     
     .code-input {
-        background: #2d2d2d;
+        background: #1e1e1e;
         border: none;
-        color: #00ff00;
+        color: #f8f8f2;
         padding: 15px;
         width: 100%;
-        font-family: 'Courier New', monospace;
+        font-family: 'Fira Code', 'Courier New', monospace;
         font-size: 14px;
         min-height: 200px;
         resize: vertical;
@@ -64,8 +68,13 @@
         background: #00cc00;
     }
     
+    .execute-btn:disabled {
+        background: #666;
+        cursor: not-allowed;
+    }
+    
     .output-container {
-        background: #2d2d2d;
+        background: #1e1e1e;
         border: 1px solid #444;
         border-radius: 4px;
         padding: 15px;
@@ -74,7 +83,8 @@
         overflow-y: auto;
         white-space: pre-wrap;
         font-size: 13px;
-        font-family: 'Courier New', monospace;
+        font-family: 'Fira Code', 'Courier New', monospace;
+        color: #f8f8f2;
     }
     
     .error-container {
@@ -88,7 +98,7 @@
         overflow-y: auto;
         white-space: pre-wrap;
         font-size: 13px;
-        font-family: 'Courier New', monospace;
+        font-family: 'Fira Code', 'Courier New', monospace;
     }
     
     .security-warning {
@@ -149,6 +159,15 @@
         border-radius: 8px;
         margin-top: 20px;
     }
+    
+    /* Dracula theme colors */
+    .keyword { color: #ff79c6; }
+    .string { color: #f1fa8c; }
+    .number { color: #bd93f9; }
+    .comment { color: #6272a4; }
+    .function { color: #50fa7b; }
+    .class { color: #8be9fd; }
+    .operator { color: #ff79c6; }
 </style>
 {% endblock %}
 
@@ -186,6 +205,7 @@
             <li>Variáveis ficam disponíveis para próximos comandos</li>
             <li><strong>Tab:</strong> Indentação automática (4 espaços)</li>
             <li><strong>Enter:</strong> Nova linha com indentação inteligente</li>
+            <li><strong>Ctrl+Enter:</strong> Executar código</li>
         </ul>
     </div>
     
@@ -213,7 +233,7 @@
                           name="code" 
                           class="code-input" 
                           placeholder="Digite seu código Python aqui...&#10;&#10;Exemplos:&#10;from catalogo.models import Livro&#10;qtdLivros = Livro.objects.count()&#10;print(qtdLivros)&#10;&#10;for livro in Livro.objects.all()[:5]:&#10;    print(f'{livro.titulo} - R$ {livro.preco}')"
-                          autocomplete="off"></textarea>
+                          autocomplete="off">{% if last_code %}{{ last_code }}{% endif %}</textarea>
             </div>
             <button type="submit" class="execute-btn">
                 <i class="fas fa-play"></i> Executar
@@ -250,14 +270,29 @@
     </div>
 </div>
 
+<!-- Prism.js para syntax highlighting -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+
 <script>
 function insertCode(code) {
     document.getElementById('code').value = code;
 }
 
+// Função para syntax highlighting simples
+function highlightPython(text) {
+    return text
+        .replace(/\b(import|from|as|def|class|if|else|elif|for|while|try|except|finally|with|return|yield|lambda|and|or|not|in|is|True|False|None)\b/g, '<span class="keyword">$1</span>')
+        .replace(/(["'])((?:\\.|(?!\1)[^\\])*?)\1/g, '<span class="string">$1$2$1</span>')
+        .replace(/\b(\d+\.?\d*)\b/g, '<span class="number">$1</span>')
+        .replace(/(#.*$)/gm, '<span class="comment">$1</span>')
+        .replace(/\b(print|len|str|int|float|list|dict|set|tuple|range|enumerate|zip|sorted|reversed|sum|max|min|abs|round)\s*\(/g, '<span class="function">$1</span>(')
+        .replace(/\b([A-Z][a-zA-Z0-9_]*)\b/g, '<span class="class">$1</span>');
+}
+
 // Função para mostrar resultado do script
 function showScriptResult(code, output, error, executionTime) {
-    document.getElementById('executed-code').textContent = code;
+    document.getElementById('executed-code').innerHTML = highlightPython(code);
     document.getElementById('script-output').textContent = output || '';
     document.getElementById('script-error').textContent = error || '';
     document.getElementById('execution-time').textContent = executionTime.toFixed(3);
@@ -311,6 +346,12 @@ function handleIndentation(textarea, event) {
         const newCursorPos = cursorPos + 4;
         textarea.setSelectionRange(newCursorPos, newCursorPos);
     }
+    
+    // Se pressionou Ctrl+Enter
+    if (event.key === 'Enter' && event.ctrlKey) {
+        event.preventDefault();
+        document.getElementById('python-shell-form').dispatchEvent(new Event('submit'));
+    }
 }
 
 document.getElementById('python-shell-form').addEventListener('submit', function(e) {
@@ -345,8 +386,7 @@ document.getElementById('python-shell-form').addEventListener('submit', function
             // Mostrar resultado
             showScriptResult(code, data.output, data.error, data.execution_time);
             
-            // Limpar o campo de código
-            document.getElementById('code').value = '';
+            // NÃO limpar o campo de código - manter o código executado
         }
     })
     .catch(error => {
